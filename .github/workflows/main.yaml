@@ -1,8 +1,23 @@
 name: Java Build and Push
 
 on:
-  push:
-    branches: [ master ]
+ workflow_dispatch:
+  inputs:
+    environment:
+      description: "Select environment"
+      type: choice
+      required: true
+      options:
+        - dev
+        - staging
+        - prod
+      default: dev
+
+    deploy:
+      description: "Deploy after build?"
+      type: boolean
+      required: true
+      default: false
 
 jobs:
   build:
@@ -20,11 +35,10 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build and Push
+      - name: Build and Push Docker Image
         uses: docker/build-push-action@v5
         with:
-          file: Dockerfile
           context: .
           push: true
-          tags: azizdevops88/java-app:latest
-
+          # CHANGE THIS LINE: Use the GitHub SHA instead of 'latest'
+          tags: azizdevops88/java-app:${{ github.sha }}
