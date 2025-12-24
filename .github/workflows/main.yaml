@@ -20,11 +20,13 @@ on:
       default: false
 
 jobs:
-  build:
+  build-and-update:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -32,13 +34,23 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build and Push Docker Image
+      - name: Build and Push
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
-          # CHANGE THIS LINE: Use the GitHub SHA instead of 'latest'
-          tags: azizdevops88/java-app:${{ github.sha }}
+
+          tags: ${{ secrets.DOCKER_USERNAME }}/java-app:${{ github.sha }}
+
+
+      - name: Update Helm Chart Tag
+        run: |
+          # Use sed to find 'tag: ...' and replace it with the new SHA
+          sed -i "s/tag: .*/tag: \"${{ github.sha }}\"/" java-app-chart/values.yaml
+          
+          # Configure Git to push the change back to the repo
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+          git add java-app-chart/values.yaml
+          git commit -m "chore: update image tag to ${{ github.sha }} [skip ci]"
+          git push
