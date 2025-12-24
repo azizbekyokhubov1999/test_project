@@ -27,3 +27,4 @@ jobs:
           context: .
           push: true
           tags: azizdevops88/java-app:latest
+
