@@ -9,7 +9,7 @@ replicaCount: 1
 image:
   repository: azizdevops88/java-app
   pullPolicy: IfNotPresent
-  tag: "0778613069993bce93e276737b6032c97f701e3f"
+  tag: "3e677c266e5f95bd37b5024be94df9c55a455848"
 
 # This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
 imagePullSecrets: []
